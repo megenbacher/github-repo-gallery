@@ -4,6 +4,8 @@ const username = "megenbacher";
 const repoList = document.querySelector(".repo-list");
 const repoInfoAppear = document.querySelector(".repos");
 const indivRepo = document.querySelector(".repo-data");
+const backToRepo = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos");
 
 const gitHub = async function () {
     const res = await fetch (`https://api.github.com/users/${username}`);
@@ -41,8 +43,9 @@ const gitRepos = async function () {
     console.log(rep);
     repoInformation(rep);
 };
-
+//Displays ALL the repos//
 const repoInformation = function (repos) {
+    filterInput.classList.remove("hide");
     for (const repo of repos) {
     const repoItem = document.createElement("li");
     repoItem.classList.add("repo");
@@ -63,6 +66,7 @@ repoList.addEventListener("click", function (e) {
 
 });
 
+//Function that GETS specific repo info//
 const specificRepoInfo = async function (repoName) {
     const repo = await fetch (`https://api.github.com/repos/${username}/${repoName}`);
         const repoInfo = await repo.json();
@@ -80,11 +84,12 @@ const specificRepoInfo = async function (repoName) {
     displayRepoInfo(repoInfo, languages);
 
     };
-
+//Function that DISPLAYS specific repo info//
 const displayRepoInfo = function (repoInfo, languages) {
     indivRepo.innerHTML = "";
     indivRepo.classList.remove("hide");
     repoInfoAppear.classList.add("hide");
+    backToRepo.classList.remove("hide");
     const element = document.createElement("div");
     element.innerHTML =
     `<h3>Name: ${repoInfo.name}</h3>
@@ -95,10 +100,29 @@ const displayRepoInfo = function (repoInfo, languages) {
    
     indivRepo.append(element);
     
-    
-
-    
 };
 
+backToRepo.addEventListener("click", function () {
+    repoInfoAppear.classList.remove("hide");
+    indivRepo.classList.add("hide");
+    backToRepo.classList.add("hide");
 
 
+
+});
+//Input Event to the Search Box//
+filterInput.addEventListener("input", function (e) {
+    const captureValue = e.target.value;
+   const repos = document.querySelectorAll(".repo");
+   const lowercase = captureValue.toLowerCase();
+   
+   for (const repo of repos) {
+       const lowercaseValue = repo.innerText.toLowerCase();
+       if (lowercaseValue.includes(lowercase)) {
+           repo.classList.remove("hide");
+       } else {
+           repo.classList.add("hide");
+       }
+    }
+
+});
